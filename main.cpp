@@ -300,7 +300,7 @@ int WinMain(HINSTANCE hInstance,
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGuiCol_BorderShadow);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, hC);
 
-            if (ImGui::Button("This is YourButton"))
+            if (ImGui::Button("This is HisButton"))
             {
                 is = false;
             }
