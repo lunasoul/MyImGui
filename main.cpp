@@ -5,7 +5,7 @@ using namespace std;
 
 // Helper to display a little (?) mark which shows a tooltip when hovered.
 // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
-static void HelpMarker(const char* desc)
+static void HelpMarker(const char *desc)
 {
     ImGui::TextDisabled("(?)");
     if (ImGui::BeginItemTooltip())
@@ -18,11 +18,11 @@ static void HelpMarker(const char* desc)
 }
 
 // Data
-static ID3D11Device* g_pd3dDevice = nullptr;
-static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
-static IDXGISwapChain* g_pSwapChain = nullptr;
-static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
-static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
+static ID3D11Device *g_pd3dDevice = nullptr;
+static ID3D11DeviceContext *g_pd3dDeviceContext = nullptr;
+static IDXGISwapChain *g_pSwapChain = nullptr;
+static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
+static ID3D11RenderTargetView *g_mainRenderTargetView = nullptr;
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -33,7 +33,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 
 // Win32 message handler
 // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -66,10 +65,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 // Helper functions
 
-
 void CleanupRenderTarget()
 {
-    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
+    if (g_mainRenderTargetView)
+    {
+        g_mainRenderTargetView->Release();
+        g_mainRenderTargetView = nullptr;
+    }
 }
 
 bool CreateDeviceD3D(HWND hWnd)
@@ -92,9 +94,12 @@ bool CreateDeviceD3D(HWND hWnd)
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
     UINT createDeviceFlags = 0;
-    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    // createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
     D3D_FEATURE_LEVEL featureLevel;
-    const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    const D3D_FEATURE_LEVEL featureLevelArray[2] = {
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_0,
+    };
     HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
     if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
         res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
@@ -107,7 +112,7 @@ bool CreateDeviceD3D(HWND hWnd)
 
 void CreateRenderTarget()
 {
-    ID3D11Texture2D* pBackBuffer;
+    ID3D11Texture2D *pBackBuffer;
     g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
     g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
     pBackBuffer->Release();
@@ -116,23 +121,34 @@ void CreateRenderTarget()
 void CleanupDeviceD3D()
 {
     CleanupRenderTarget();
-    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
-    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
-    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
+    if (g_pSwapChain)
+    {
+        g_pSwapChain->Release();
+        g_pSwapChain = nullptr;
+    }
+    if (g_pd3dDeviceContext)
+    {
+        g_pd3dDeviceContext->Release();
+        g_pd3dDeviceContext = nullptr;
+    }
+    if (g_pd3dDevice)
+    {
+        g_pd3dDevice->Release();
+        g_pd3dDevice = nullptr;
+    }
 }
 
-//int main()
+// int main()
 int WinMain(HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine,
-    int nShowCmd)
+            HINSTANCE hPrevInstance,
+            LPSTR lpCmdLine,
+            int nShowCmd)
 {
     // Create application window
-//ImGui_ImplWin32_EnableDpiAwareness();
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
+    // ImGui_ImplWin32_EnableDpiAwareness();
+    WNDCLASSEXW wc = {sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr};
     ::RegisterClassExW(&wc);
     HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"CastleVania", WS_OVERLAPPED, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, nullptr);
-
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -145,22 +161,20 @@ int WinMain(HINSTANCE hInstance,
     // Show the window
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
-    
-    
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+
     // Setup Dear ImGui style
-    //ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
-    //ImGui::StyleColorsLight();
+    // ImGui::StyleColorsDark();
+    // ImGui::StyleColorsClassic();
+    // ImGui::StyleColorsLight();
     ImGui::StyleColorsAnimage();
-
-
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -174,24 +188,23 @@ int WinMain(HINSTANCE hInstance,
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
+    // io.Fonts->AddFontDefault();
     ImFontConfig ifc;
     ifc.FontDataOwnedByAtlas = false;
-    ImFont* myFont = io.Fonts->AddFontFromMemoryTTF((void*)font_data_data, font_data_size,24.0f,&ifc,io.Fonts->GetGlyphRangesChineseFull());
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != nullptr);
-    // 
-
+    ImFont *myFont = io.Fonts->AddFontFromMemoryTTF((void *)font_data_data, font_data_size, 24.0f, &ifc, io.Fonts->GetGlyphRangesChineseFull());
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+    // ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+    // IM_ASSERT(font != nullptr);
+    //
 
     // Our state
-    //bool show_demo_window = true;
-    //bool show_another_window = false;
+    // bool show_demo_window = true;
+    // bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    //loop
+    // loop
     bool done = false;
     while (!done)
     {
@@ -207,7 +220,6 @@ int WinMain(HINSTANCE hInstance,
         }
         if (done)
             break;
-
 
         // Handle window resize (we don't resize directly in the WM_SIZE handler)
         if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
@@ -264,29 +276,31 @@ int WinMain(HINSTANCE hInstance,
         static bool is = true;
         if (is)
         {
-            ImVec2 a(90,30);
+            ImVec2 a(90, 30);
 
-            ImGui::Begin(u8"月之轮回",&is, ImGuiWindowFlags_MenuBar);
-            
-            //ImGui::SetWindowPos("LunaGui", ImVec2(0, 0));
-            //ImGui::SetWindowSize("LunaGui",ImVec2(640, 480));
+            ImGui::Begin(u8"月之轮回", &is, ImGuiWindowFlags_MenuBar);
+
+            // ImGui::SetWindowPos("LunaGui", ImVec2(0, 0));
+            // ImGui::SetWindowSize("LunaGui",ImVec2(640, 480));
             ImGui::BulletText(u8"子弹Text");
             ImGui::TextWrapped(u8"我正在规划我的9月份的周年纪念日旅行。 能帮忙推荐一些距伦敦希思罗机场航程不超过3小时的去处吗？");
-            ImGui::TextColored(ImVec4(1,0,1,1),"Pink");
-            ImGui::SameLine(); ImGui::TextColored(ImVec4(1,1,0,1),"Yellow");
-            ImGui::SameLine(); HelpMarker("This is a help marker");
+            ImGui::TextColored(ImVec4(1, 0, 1, 1), "Pink");
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Yellow");
+            ImGui::SameLine();
+            HelpMarker("This is a help marker");
 
-            //ImU32 color
-            ImU32 colorValue = IM_COL32(255,255,0,255);
-            //HSV color
-            ImColor hsvColor(0.2f,0.9f,0.85f);
+            // ImU32 color
+            ImU32 colorValue = IM_COL32(255, 255, 0, 255);
+            // HSV color
+            ImColor hsvColor(0.2f, 0.9f, 0.85f);
             ImVec4 hC = hsvColor;
             ImGui::PushStyleColor(ImGuiCol_Button, colorValue);
-            //ImGuiCol color
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,ImGuiCol_BorderShadow);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive,hC);
+            // ImGuiCol color
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGuiCol_BorderShadow);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, hC);
 
-            if (ImGui::Button("This is MyButton"))
+            if (ImGui::Button("This is YourButton"))
             {
                 is = false;
             }
@@ -294,79 +308,94 @@ int WinMain(HINSTANCE hInstance,
             ImGui::PopStyleColor();
             ImGui::PopStyleColor();
             ImGui::PopStyleColor();
-            //static bool rad = false;
-            //if (ImGui::RadioButton("My Radio Button", rad))
+            // static bool rad = false;
+            // if (ImGui::RadioButton("My Radio Button", rad))
             //{
-            //    rad = !rad;
-            //}
+            //     rad = !rad;
+            // }
             static int rad = 0;
 
-            ImGui::RadioButton("Boss",&rad,0); 
+            ImGui::RadioButton("Boss", &rad, 0);
 
-            ImGui::RadioButton("AIMBOT",&rad,1); 
+            ImGui::RadioButton("AIMBOT", &rad, 1);
 
-            ImGui::RadioButton("PLAYER",&rad,2); 
+            ImGui::RadioButton("PLAYER", &rad, 2);
             switch (rad)
             {
-            case 0: {printf("0\n"); }
-                  break;
-            case 1:{printf("1\n"); }
-                  break;
-            case 2:{printf("2\n"); }
-                  break;
-            default:{}
-                   break;
+            case 0:
+            {
+                printf("0\n");
+            }
+            break;
+            case 1:
+            {
+                printf("1\n");
+            }
+            break;
+            case 2:
+            {
+                printf("2\n");
+            }
+            break;
+            default:
+            {
+            }
+            break;
             }
             static bool CheB0 = 0;
             static bool CheB1 = 0;
             static bool CheB2 = 0;
-            ImGui::Checkbox(u8"同意",&CheB0);
-            ImGui::Checkbox(u8"外貌",&CheB1);
-            ImGui::Checkbox(u8"法术",&CheB2);
+            ImGui::Checkbox(u8"同意", &CheB0);
+            ImGui::Checkbox(u8"外貌", &CheB1);
+            ImGui::Checkbox(u8"法术", &CheB2);
 
             static char buf[1024] = "";
             static char bufP[1024] = "";
             ImGui::Text("Account:");
             ImGui::SameLine();
-            ImGui::InputText("##Acount:",buf,IM_ARRAYSIZE(buf));
+            ImGui::InputText("##Acount:", buf, IM_ARRAYSIZE(buf));
             ImGui::Text("Password:");
             ImGui::SameLine();
-            ImGui::InputText("##Password:",bufP,IM_ARRAYSIZE(buf), ImGuiInputTextFlags_Password);
+            ImGui::InputText("##Password:", bufP, IM_ARRAYSIZE(buf), ImGuiInputTextFlags_Password);
             static char textH[1024] = "tee";
             static char hint[1024] = "";
-            ImGui::InputTextWithHint("TextHint", textH, hint,IM_ARRAYSIZE(textH));
+            ImGui::InputTextWithHint("TextHint", textH, hint, IM_ARRAYSIZE(textH));
 
             static float f = 0.5f;
             if (ImGui::SliderFloat("Float:", &f, 0.0f, 1.0f, "%.2f"))
             {
-                printf("slider is:%.2f",f);
+                printf("slider is:%.2f", f);
             }
 
             static float progress = 0.0f, progress_dir = 1.0f;
-            
+
             bool animate = true;
             if (animate)
             {
                 progress += progress_dir * 0.4f * ImGui::GetIO().DeltaTime;
-                if (progress >= +1.1f) { progress = +1.1f; progress_dir *= -1.0f; }
-                if (progress <= -0.1f) { progress = -0.1f; progress_dir *= -1.0f; }
-
+                if (progress >= +1.1f)
+                {
+                    progress = +1.1f;
+                    progress_dir *= -1.0f;
+                }
+                if (progress <= -0.1f)
+                {
+                    progress = -0.1f;
+                    progress_dir *= -1.0f;
+                }
             }
             ImGui::ProgressBar(progress);
             ImGui::End();
         }
         // Rendering
         ImGui::Render();
-        const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+        const float clear_color_with_alpha[4] = {clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w};
         g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
         g_pSwapChain->Present(1, 0); // Present with vsync
-        //g_pSwapChain->Present(0, 0); // Present without vsync
-
-
-
+        // g_pSwapChain->Present(0, 0); // Present without vsync
     }
     // Cleanup
     ImGui_ImplDX11_Shutdown();
@@ -379,4 +408,3 @@ int WinMain(HINSTANCE hInstance,
 
     return 0;
 }
-
